@@ -14,35 +14,35 @@
 
 (require '[cljs.build.api :as b])
 (require '[cljs-server.slurp-goog :as slurp-goog])
-(import clojure.lang.RT)
+;(import clojure.lang.RT)
 
-(defn compile-once []
-  (b/build "src"
+(defn watch []
+  (b/watch "src"
            {:main 'cljs-server.core
             :output-to "out/self_compile.js"
             :output-dir "out"
-            :optimizations :whitespace
+;            :optimizations :whitespace
             :verbose true
             }))
 
-(defn get-source [path]
+#_(defn get-source [path]
   (slurp (some #(RT/getResource (RT/baseLoader) (str path %))
                [".cljs" ".cljc"])))
 
-(defn fix-source [name path]
+#_(defn fix-source [name path sym]
   (if (.startsWith name "goog.")
     {:lang :js
-     :source (slurp-goog/slurp-deps name)}
+     :source (slurp-goog/slurp-deps name sym)}
     {:lang :clj
      :source (get-source path)}))
 
 (defroutes app
-  (GET "/" [name path]
+  (GET "/" [root]
        {:status 200
         :headers {
                   "Access-Control-Allow-Origin" "*"
                   }
-        :body (pr-str (fix-source name path))})
+        :body (slurp-goog/slurp-deps root)})
   (GET "/js" []
        (response/response (fix-source)))
   (ANY "*" []

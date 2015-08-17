@@ -1,30 +1,48 @@
 (ns cljs-server.slurp-goog)
 
-(def lines
-  (filter #(.startsWith % "goog")
-          (.split
-           (slurp "out/goog/deps.js") "\n")))
+(defn slurp-deps-map
+  "transforms a deps.js file into edn"
+  [f prefix]
+  (let [
+        lines (filter #(.startsWith % "goog.addDependency")
+                      (.split (slurp f) "\n"))
+        raw-deps (map
+                  #(-> %
+                       (.replace "goog.addDependency" "")
+                       (.replace "'" "\"")
+                       read-string)
+                  lines)
+        ]
+    (into {}
+          (mapcat
+           (fn [[location provides requires]]
+             (for [provide provides]
+               [provide [(str prefix location) requires]]))
+           raw-deps))))
 
-(def raw-deps (map
-               #(-> %
-                    (.replace "goog.addDependency" "")
-                    (.replace "'" "\"")
-                    read-string) lines))
+(def goog-deps (slurp-deps-map "goog/deps.js" "goog/"))
 
-(def deps (into {}
-                (mapcat
-                 (fn [[location provides requires]]
-                   (for [provide provides]
-                     [provide [location requires]]))
-                 raw-deps)))
-
-(defn glue-lines [lines]
+(defn glue-lines
+  "glue lines"
+  [lines]
   (apply str
          (interpose "\n" lines)))
 
-(defn deps-seq [root]
-  (reverse
-   (distinct
+(defn safe-distinct [s]
+  (loop [included #{}
+         done []
+         todo s]
+    (if-let [item (first todo)]
+      (if (included item)
+        (recur included done (rest todo))
+        (recur (conj included item) (conj done item) (rest todo)))
+      (list* done))))
+
+(defn deps-seq
+  "sequence of deps to be slurped"
+  [deps root]
+  (distinct
+   (reverse
     (map
      (fn [dep]
        [dep (first (deps dep))])
@@ -33,14 +51,23 @@
       #(-> % deps second)
       root)))))
 
+(defn deps-seq2
+  "deps for root"
+  [root]
+  (conj
+   (deps-seq
+    (merge goog-deps (slurp-deps-map "out/cljs_deps.js" "out/goog/"))
+    root)
+   ["goog.base" "goog/base.js"]))
+
 (defn slurp-dep [[name path]]
   (let [
-        lines (.split (slurp (str "goog/" path)) "\n")
-        lines (remove #(or (.startsWith % "goog.provide")
-                           (.startsWith % "goog.require"))
-                     lines)
-        lines (conj lines
-              (format "declare_ns('%s')" name))
+        lines (map (fn [line]
+                     (cond
+                      (.startsWith line "goog.require(") ""
+                      (.startsWith line "goog.provide(") (format "try{%s}catch(e){}" line)
+                      :default line))
+                   (.split (slurp path) "\n"))
         ]
     (glue-lines lines)))
 
@@ -54,9 +81,14 @@
   parent = parent[breakdown[i]]
   }};")
 
-(defn slurp-deps [root]
-  (glue-lines (conj
-               (map slurp-dep (deps-seq root))
-               declare-ns)))
+(defn predeclare-ns [deps]
+  (map (fn [[path]]
+         (format "declare_ns('%s')" path))
+       deps))
 
-;(spit "test.js" (str declare-ns (slurp-deps "goog.dom")))
+(defn slurp-deps [root]
+  (let [deps (deps-seq2 root)]
+    (glue-lines (conj
+                 (concat
+                  (map slurp-dep (deps-seq2 root)))
+                 declare-ns))))

@@ -1330,7 +1330,7 @@ if (goog.DEPENDENCIES_ENABLED) {
 
   // Allow projects to manage the deps files themselves.
   if (!goog.global.CLOSURE_NO_DEPS) {
-    goog.importScript_(goog.basePath + 'deps.js');
+//    goog.importScript_(goog.basePath + 'deps.js');
   }
 }
 
