@@ -2,7 +2,7 @@
   (:require
    [ajax.core :refer [GET POST]]
    [crate.core :as crate]
-   cljs-server.cbre
+
   ))
 
 (enable-console-print!)
@@ -24,7 +24,7 @@
           children (filter identity (map dom2edn (array-seq (.-childNodes element))))
           ]
       (if (not-empty children)
-        [a b children]
+        (vec (list* a b children))
         [a b]))
     (if (.-textContent element)
       (let [

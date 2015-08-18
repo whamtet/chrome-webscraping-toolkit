@@ -59,7 +59,6 @@
   (let [port (Integer. (or port (env :port) 7000))]
     (def server (jetty/run-jetty (wrap-app #'app) {:port port :join? false
                                                    :ssl? true
-;                                                   :ssl-port port
                                                    :keystore "keys/keystore.jks"
                                                    :key-password "password"
                                                    }))
@@ -68,7 +67,7 @@
 
 (defn -main [& [port]]
   (serve)
-  #_(watch))
+  (watch))
 
 ;; For interactive development:
 ;; (.stop server)
