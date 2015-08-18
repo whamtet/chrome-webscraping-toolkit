@@ -1,31 +1,47 @@
 (ns cljs-server.core
-;  (:require crate.core)
-  )
+  (:require
+   [ajax.core :refer [GET POST]]
+   [crate.core :as crate]
+  ))
 
 (enable-console-print!)
-(js/alert "hi")
 
-(defn ^:export require-code [root]
-  (let [
-        url (str "http://localhost:5000/?root=cljs_server.core")
-        ]
-    (js/$.get url #(-> % #_fix-js js/eval))))
+(def attributes (js/Function.
+                 "element"
+                 "  out = []
+                 for (var i = 0; i < element.attributes.length; i++) {
+                 var x = element.attributes[i]
+                 out.push([x.nodeName, x.nodeValue])
+                 }
+                 return out"))
 
-(defn ^:export at []
-  (println "hi")
-  #_(let [s (js/document.createElement "script")]
-    (set! (.-src s) "http://localhost:5000/?root=cljs_server.core")
-    (js/document.head.appendChild s)))
+(defn dom2edn [element]
+  (if (.-tagName element)
+    (let [
+          a (-> element .-tagName .toLowerCase keyword)
+          b (into {} (map (fn [[a b]] [(keyword a) b]) (js->clj (attributes element))))
+          children (filter identity (map dom2edn (array-seq (.-childNodes element))))
+          ]
+      (if (not-empty children)
+        [a b children]
+        [a b]))
+    (if (.-textContent element)
+      (let [
+            trimmed (-> element .-textContent .trim)
+            ]
+        (if (not-empty trimmed) trimmed)))))
 
-(defn ^:export reload [server root]
-  (let [
-        server (or server "http://localhost:5000/")
-        root (or root "cljs_server.core")
-        s (js/document.createElement "script")
-        ]
-    (set! (.-src s) (str server "?root=" root))
-    (js/document.head.appendChild s)))
+(defn send-to-octant [links]
+  (prn links)
+  (POST "http://localhost:5000/jll" {:params {:links links}}))
 
-(def a (atom 1))
-(defn ^:export -main []
-  (swap! a inc))
+(defn select-links []
+  (map #(-> % dom2edn second) (array-seq (js/$ "h3 > a"))))
+
+(set! js/s #(send-to-octant (select-links)))
+
+;(def button (crate/html [:input {:type "button" :onclick "s()" :value "save"}]))
+
+;(.append (js/$ "#defaultChannelDiv > div > div") button)
+
+(println "loaded")

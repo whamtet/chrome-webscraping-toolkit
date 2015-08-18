@@ -21,20 +21,8 @@
            {:main 'cljs-server.core
             :output-to "out/self_compile.js"
             :output-dir "out"
-;            :optimizations :whitespace
             :verbose true
             }))
-
-#_(defn get-source [path]
-  (slurp (some #(RT/getResource (RT/baseLoader) (str path %))
-               [".cljs" ".cljc"])))
-
-#_(defn fix-source [name path sym]
-  (if (.startsWith name "goog.")
-    {:lang :js
-     :source (slurp-goog/slurp-deps name sym)}
-    {:lang :clj
-     :source (get-source path)}))
 
 (defroutes app
   (GET "/" [root]
@@ -43,8 +31,6 @@
                   "Access-Control-Allow-Origin" "*"
                   }
         :body (slurp-goog/slurp-deps root)})
-  (GET "/js" []
-       (response/response (fix-source)))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 
@@ -66,8 +52,10 @@
         (site {:session {:store store}}))))
 
 (defn -main [& [port]]
-  (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (wrap-app #'app) {:port port :join? false})))
+  (let [port (Integer. (or port (env :port) 7000))]
+    (def server (jetty/run-jetty (wrap-app #'app) {:port port :join? false}))
+    (watch)
+    ))
 
 ;; For interactive development:
 ;; (.stop server)

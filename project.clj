@@ -14,7 +14,7 @@
                  ;;add cljs dependencies here
                  [crate "0.2.4"]
                  [org.clojure/clojurescript "1.7.48"]
-                 [cljs-ajax "0.2.6"]
+                 [cljs-ajax "0.3.14"]
                  ]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]]

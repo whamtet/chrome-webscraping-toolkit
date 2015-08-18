@@ -71,24 +71,19 @@
         ]
     (glue-lines lines)))
 
-(def declare-ns "declare_ns = function(name) {
-  var breakdown = name.split('.')
-  var parent = window
-  for (var i = 0; i < breakdown.length; i++) {
-  if (!parent[breakdown[i]]) {
-  parent[breakdown[i]] = {}
-  }
-  parent = parent[breakdown[i]]
-  }};")
+(def safe-delete "safe_delete = function(name) {
+  if (window[name]) { delete window[name];}}")
 
 (defn predeclare-ns [deps]
-  (map (fn [[path]]
-         (format "declare_ns('%s')" path))
-       deps))
+  (let [
+        deps (distinct (map (fn [[name]] (first (.split name "\\."))) deps))
+        ]
+    (map #(format "safe_delete('%s');" %) deps)))
 
 (defn slurp-deps [root]
   (let [deps (deps-seq2 root)]
     (glue-lines (conj
                  (concat
-                  (map slurp-dep (deps-seq2 root)))
-                 declare-ns))))
+                  (predeclare-ns deps)
+                  (map slurp-dep deps))
+                 safe-delete))))
