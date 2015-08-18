@@ -31,6 +31,10 @@
                   "Access-Control-Allow-Origin" "*"
                   }
         :body (slurp-goog/slurp-deps root)})
+  (GET "/test" []
+       {:status 200
+        :headers {}
+        :body "poos"})
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 
@@ -51,11 +55,20 @@
            trace/wrap-stacktrace))
         (site {:session {:store store}}))))
 
-(defn -main [& [port]]
+(defn serve [& [port]]
   (let [port (Integer. (or port (env :port) 7000))]
-    (def server (jetty/run-jetty (wrap-app #'app) {:port port :join? false}))
-    (watch)
+    (def server (jetty/run-jetty (wrap-app #'app) {:port port :join? false
+                                                   :ssl? true
+;                                                   :ssl-port port
+                                                   :keystore "keys/keystore.jks"
+                                                   :key-password "password"
+                                                   }))
+    (println "done")
     ))
+
+(defn -main [& [port]]
+  (serve)
+  #_(watch))
 
 ;; For interactive development:
 ;; (.stop server)
