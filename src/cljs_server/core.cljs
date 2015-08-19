@@ -32,18 +32,12 @@
             ]
         (if (not-empty trimmed) trimmed)))))
 
-(defn send-to-octant [links]
-  (prn links)
-  (POST "http://localhost:5000/jll" {:params {:links links}
-                                     :handler #(-> % pr-str js/alert)
-                                     }))
+(defn my-get [k f]
+  (POST "http://localhost:5000/get" {:params {:k k}
+                                    :handler f}))
 
-(defn select-links []
-  (map #(-> % dom2edn second) (array-seq (js/$ "h3 > a"))))
+(defn my-set [k v]
+  (POST "http://localhost:5000/set" {:params {:k k :v v}}))
 
-(set! js/s #(send-to-octant (select-links)))
 
-(def button (crate/html [:input {:type "button" :onclick "s()" :value "save"}]))
-
-(.append (js/$ "#defaultChannelDiv > div > div") button)
 (println "loaded")

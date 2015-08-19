@@ -35,21 +35,34 @@
  }")
 
 (def ids (atom nil))
+(core/my-get "cbre" #(def downloaded (atom (set %))))
 
 (defn set-ids []
   (let [
-        checked (rest (array-seq (js/$ "input:checked")))
-        get-edn #(-> % .-parentElement .-parentElement core/dom2edn (get-in [2 2 1 :onclick]))
-        get-id #(let [s (re-find #"'.+'" (get-edn %))]
-                  (->> s rest butlast (apply str)))
+        checked (map #(-> % .-parentElement .-parentElement core/dom2edn) (rest (array-seq (js/$ "input:checked"))))
+        checked (vec (remove #(@downloaded (last (get-in % [3 2]))) checked))
         ]
-    (reset! ids (map get-id checked))))
+    (reset! ids checked)))
+
+(let [
+      checked (second (array-seq (js/$ "input:checked")))
+      ]
+  (-> checked .-parentElement .-parentElement core/dom2edn (get-in [3 2]) last prn))
+
+(defn t []
+  (prn @downloaded))
 
 (defn download []
   (if (not-empty @ids)
-    (do
-      (js/dl (first @ids))
-      (swap! ids rest))
+    (let [id (get-in @ids [0 2 2 1 :onclick])
+          download-name (last (get-in @ids [0 3 2]))
+          id (re-find #"'.+'" id)
+          id (->> id rest butlast (apply str))]
+      (js/dl id)
+      (swap! ids subvec 1)
+      (swap! downloaded conj download-name)
+      (core/my-set "cbre" @downloaded)
+      )
     (js/alert "done!!!")))
 
 (println "cbre")
