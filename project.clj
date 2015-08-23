@@ -16,6 +16,7 @@
                  [org.clojure/clojurescript "1.7.48"]
                  [cljs-ajax "0.3.14"]
                  ]
+  :resource-paths ["goog" "keys"]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]]
   :hooks [environ.leiningen.hooks]

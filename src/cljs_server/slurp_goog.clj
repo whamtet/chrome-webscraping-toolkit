@@ -1,11 +1,18 @@
 (ns cljs-server.slurp-goog)
+(import clojure.lang.RT)
+
+(defn slurp-cp
+  "slurps from classpath"
+  [f]
+  (slurp (if (.startsWith f "/") (RT/getResource (RT/baseLoader) (.substring f 1)) f)))
 
 (defn slurp-deps-map
   "transforms a deps.js file into edn"
   [f prefix]
   (let [
+        s (slurp-cp f)
         lines (filter #(.startsWith % "goog.addDependency")
-                      (.split (slurp f) "\n"))
+                      (.split s "\n"))
         raw-deps (map
                   #(-> %
                        (.replace "goog.addDependency" "")
@@ -20,7 +27,7 @@
                [provide [(str prefix location) requires]]))
            raw-deps))))
 
-(def goog-deps (slurp-deps-map "goog/deps.js" "goog/"))
+(def goog-deps (slurp-deps-map "/deps.js" "/"))
 
 (defn glue-lines
   "glue lines"
@@ -67,7 +74,7 @@
                       (.startsWith line "goog.require(") ""
                       (.startsWith line "goog.provide(") (format "try{%s}catch(e){}" line)
                       :default line))
-                   (.split (slurp path) "\n"))
+                   (.split (slurp-cp path) "\n"))
         ]
     (glue-lines lines)))
 

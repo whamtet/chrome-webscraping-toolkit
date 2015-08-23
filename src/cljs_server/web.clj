@@ -14,10 +14,16 @@
 
 (require '[cljs.build.api :as b])
 (require '[cljs-server.slurp-goog :as slurp-goog])
-;(import clojure.lang.RT)
+(import clojure.lang.RT)
+(import java.security.KeyStore)
 
-(defn watch []
-  (b/watch "src"
+(def keystore
+  (with-open [in (io/input-stream (RT/getResource (RT/baseLoader) "keystore.jks"))]
+    (doto (KeyStore/getInstance "JKS")
+      (.load in (.toCharArray "password")))))
+
+(defn watch [src]
+  (b/watch src
            {:main 'cljs-server.core
             :output-to "out/self_compile.js"
             :output-dir "out"
@@ -29,8 +35,9 @@
        {:status 200
         :headers {
                   "Access-Control-Allow-Origin" "*"
+                  "Access-Control-Allow-Headers" "Content-Type"
                   }
-        :body (slurp-goog/slurp-deps root)})
+        :body (if root (slurp-goog/slurp-deps root) "")})
   (GET "/test" []
        {:status 200
         :headers {}
@@ -55,19 +62,23 @@
            trace/wrap-stacktrace))
         (site {:session {:store store}}))))
 
-(defn serve [& [port]]
-  (let [port (Integer. (or port (env :port) 7000))]
-    (def server (jetty/run-jetty (wrap-app #'app) {:port port :join? false
-                                                   :ssl? true
-                                                   :keystore "keys/keystore.jks"
+(defn serve
+  ([] (serve 7000 true 8000))
+  ([port ssl? ssl-port]
+    (def server (jetty/run-jetty (wrap-app #'app) {
+                                                   :port port
+                                                   :join? false
+                                                   :ssl? ssl?
+                                                   :ssl-port ssl-port
+                                                   :keystore keystore
                                                    :key-password "password"
                                                    }))
     (println "done")
     ))
 
-(defn -main [& [port]]
-  (serve)
-  (watch))
+(defn -main [port ssl? ssl-port src]
+  (serve port ssl? ssl-port)
+  (watch src))
 
 ;; For interactive development:
 ;; (.stop server)
