@@ -4,7 +4,10 @@
 (defn slurp-cp
   "slurps from classpath"
   [f]
-  (slurp (if (.startsWith f "/") (RT/getResource (RT/baseLoader) (.substring f 1)) f)))
+  (println "slurping" f)
+  (slurp (if (.startsWith f "/")
+           (if-let [x (RT/getResource (RT/baseLoader) (.substring f 1))]
+             x (throw (Exception. (str "cannot find " f)))) f)))
 
 (defn slurp-deps-map
   "transforms a deps.js file into edn"
@@ -65,7 +68,7 @@
    (deps-seq
     (merge goog-deps (slurp-deps-map "out/cljs_deps.js" "out/goog/"))
     root)
-   ["goog.base" "goog/base.js"]))
+   ["goog.base" "/base.js"]))
 
 (defn slurp-dep [[name path]]
   (let [

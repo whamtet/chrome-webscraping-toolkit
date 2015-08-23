@@ -12,9 +12,7 @@
                  [com.cemerick/drawbridge "0.0.6"]
 
                  ;;add cljs dependencies here
-                 [crate "0.2.4"]
-                 [org.clojure/clojurescript "1.7.48"]
-                 [cljs-ajax "0.3.14"]
+
                  ]
   :resource-paths ["goog" "keys"]
   :min-lein-version "2.0.0"
