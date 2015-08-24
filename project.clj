@@ -1,9 +1,11 @@
-(defproject cljs-server "1.0.0-SNAPSHOT"
+(defproject cljs-server "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://cljs-server.herokuapp.com"
   :license {:name "FIXME: choose"
             :url "http://example.com/FIXME"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [
+                 [org.clojure/clojure "1.7.0-beta2"]
+                 [org.clojure/clojurescript "1.7.48"]
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [ring/ring-devel "1.2.2"]
@@ -12,7 +14,8 @@
                  [com.cemerick/drawbridge "0.0.6"]
 
                  ;;add cljs dependencies here
-
+                 [crate "0.2.4"]
+                 [cljs-ajax "0.3.14"]
                  ]
   :resource-paths ["goog" "keys"]
   :min-lein-version "2.0.0"

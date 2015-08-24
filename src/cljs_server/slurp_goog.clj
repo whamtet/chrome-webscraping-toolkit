@@ -38,16 +38,6 @@
   (apply str
          (interpose "\n" lines)))
 
-(defn safe-distinct [s]
-  (loop [included #{}
-         done []
-         todo s]
-    (if-let [item (first todo)]
-      (if (included item)
-        (recur included done (rest todo))
-        (recur (conj included item) (conj done item) (rest todo)))
-      (list* done))))
-
 (defn deps-seq
   "sequence of deps to be slurped"
   [deps root]

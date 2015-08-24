@@ -76,9 +76,14 @@
     (println "done")
     ))
 
-(defn -main [port ssl? ssl-port src]
+(defn both [port ssl? ssl-port src]
   (serve port ssl? ssl-port)
   (watch src))
+
+(defn -main [& args]
+  (println *clojure-version*)
+  (serve)
+  (watch "src"))
 
 ;; For interactive development:
 ;; (.stop server)
