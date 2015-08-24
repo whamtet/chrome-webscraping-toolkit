@@ -1,4 +1,5 @@
 (ns leiningen.cljsserve)
+(require 'leiningen.core.eval)
 
 (defn parse-args [args]
   (let [
