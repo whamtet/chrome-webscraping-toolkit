@@ -31,12 +31,11 @@
   (prn x) x)
 
 (defn update-deps [deps]
-  (print-though
   (conj
    (for [[sym ver] deps
          :when (not (#{"clojure" "cljs-server" "clojurescript"} (name sym)))]
      [sym ver])
-   '[cljs-server "1.0.0-SNAPSHOT"])))
+   '[cljs-server "0.1.0-SNAPSHOT"]))
 
 (defn cljsserve
   "Compiles your clojurescript and serves it as javascript.
@@ -45,7 +44,6 @@
   :ssl? (default false)
   :ssl-port (default 8000)
   :src clojurescript source location (default \"src\")
-
   "
   [project & args]
   (let [
@@ -57,6 +55,5 @@
         ]
     (leiningen.core.eval/eval-in-project
      project
-     '(cljs-server.web/-main)
-;     `(cljs-server.web/both ~port ~ssl? ~ssl-port ~src)
+     `(cljs-server.web/both ~port ~ssl? ~ssl-port ~src)
      '(require 'cljs-server.web))))

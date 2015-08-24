@@ -4,7 +4,6 @@
 (defn slurp-cp
   "slurps from classpath"
   [f]
-  (println "slurping" f)
   (slurp (if (.startsWith f "/")
            (if-let [x (RT/getResource (RT/baseLoader) (.substring f 1))]
              x (throw (Exception. (str "cannot find " f)))) f)))
@@ -60,7 +59,7 @@
     root)
    ["goog.base" "/base.js"]))
 
-(defn slurp-dep [[name path]]
+(defn slurp-dep [[_ path]] ;still need _
   (let [
         lines (map (fn [line]
                      (cond
@@ -81,9 +80,14 @@
     (map #(format "safe_delete('%s');" %) deps)))
 
 (defn slurp-deps [root]
-  (let [deps (deps-seq2 root)]
-    (glue-lines (conj
-                 (concat
-                  (predeclare-ns deps)
-                  (map slurp-dep deps))
-                 safe-delete))))
+  (let [deps (deps-seq2 root)
+        response
+        (glue-lines (conj
+                     (concat
+                      (predeclare-ns deps)
+                      (map slurp-dep deps))
+                     safe-delete))
+        ]
+    (dorun response)
+    (println "done")
+    response))

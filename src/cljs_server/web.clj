@@ -43,7 +43,7 @@
         :headers {}
         :body "poos"})
   (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+       (route/not-found "not found")))
 
 (defn wrap-error-page [handler]
   (fn [req]
