@@ -30,18 +30,28 @@
             :verbose true
             }))
 
+(def cors-headers {
+                   :headers {
+                             "Access-Control-Allow-Origin" "*"
+                             "Access-Control-Allow-Headers" "Content-Type"
+                             }})
+
 (defroutes app
+  #_(OPTIONS "/" [] (assoc cors-headers
+                      :body ""
+                      :status 200))
   (GET "/" [root]
-       {:status 200
-        :headers {
-                  "Access-Control-Allow-Origin" "*"
-                  "Access-Control-Allow-Headers" "Content-Type"
-                  }
-        :body (if root (slurp-goog/slurp-deps root) "")})
-  (GET "/test" []
-       {:status 200
-        :headers {}
-        :body "poos"})
+       (let [
+             root (if root (.replace root "-" "_"))
+             response (slurp-goog/slurp-deps root)
+             ]
+         (if response
+           (assoc cors-headers
+             :status 200
+             :body response)
+           (assoc cors-headers
+             :status 400
+             :body "Invalid Namespace"))))
   (ANY "*" []
        (route/not-found "not found")))
 
@@ -65,16 +75,16 @@
 (defn serve
   ([] (serve 7000 true 8000))
   ([port ssl? ssl-port]
-    (def server (jetty/run-jetty (wrap-app #'app) {
-                                                   :port port
-                                                   :join? false
-                                                   :ssl? ssl?
-                                                   :ssl-port ssl-port
-                                                   :keystore keystore
-                                                   :key-password "password"
-                                                   }))
-    (println "done")
-    ))
+   (def server (jetty/run-jetty (wrap-app #'app) {
+                                                  :port port
+                                                  :join? false
+                                                  :ssl? ssl?
+                                                  :ssl-port ssl-port
+                                                  :keystore keystore
+                                                  :key-password "password"
+                                                  }))
+   (println "done")
+   ))
 
 (defn both [port ssl? ssl-port src]
   (serve port ssl? ssl-port)

@@ -80,14 +80,10 @@
     (map #(format "safe_delete('%s');" %) deps)))
 
 (defn slurp-deps [root]
-  (let [deps (deps-seq2 root)
-        response
+  (let [deps (deps-seq2 root)]
+    (if (every? second deps)
         (glue-lines (conj
                      (concat
                       (predeclare-ns deps)
                       (map slurp-dep deps))
-                     safe-delete))
-        ]
-    (dorun response)
-    (println "done")
-    response))
+                     safe-delete)))))
