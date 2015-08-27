@@ -18,7 +18,7 @@ then add
 to project.clj.  Next run
 
 ```
-lein cljsserver
+lein cljsserve
 ```
 
 this will start a server on localhost and compile your clojurescript code.  You can evaluate the code within [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl) by typing `(load "my-project.core")`.  This provides an easy development workflow for modifying other people's websites.
