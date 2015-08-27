@@ -1,14 +1,27 @@
 # cljs-server
 
-ClojureScript is now self-bootstrapping.  That leaves open the problem of dependency management.  One solution is to run a normal Clojure Server that simply serves up the cljs source for compilation.  This project runs a server with a single endpoint `https://localhost:5000/?ns=my.ns` which returns the source code in my.ns.  You may write your own source code and put dependencies in project.clj.
+`cljs-server` is a code server to be used in conjunction with [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl).
 
 ## Usage
 
-To start a local web server for development you can either eval the
-commented out forms at the bottom of `web.clj` from your editor or
-launch from the command line:
+Create a new clojurescript project
 
-    $ lein run -m cljs-server.web
+```
+lein new mies my-project
+```
+
+then add
+
+```clojure
+:plugins [cljs-server "0.1.0-SNAPSHOT"]
+```
+to project.clj.  Next run
+
+```
+lein cljsserver
+```
+
+this will start a server on localhost and compile your clojurescript code.  You can evaluate the code within [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl) by typing `(load "my-project.core")`.  This provides an easy development workflow for modifying other people's websies.
 
 
 ## License
