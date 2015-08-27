@@ -13,7 +13,7 @@ lein new mies my-project
 then add
 
 ```clojure
-:plugins [cljs-server "0.1.0-SNAPSHOT"]
+:plugins [[cljs-server "0.1.0-SNAPSHOT"]]
 ```
 to project.clj.  Next run
 
