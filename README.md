@@ -4,24 +4,15 @@
 
 ## Usage
 
-Create a new clojurescript project
-
-```
-lein new mies my-project
-```
-
-then add
-
-```clojure
-:plugins [[cljs-server "0.1.0-SNAPSHOT"]]
-```
-to project.clj.  Next run
-
-```
-lein cljsserve
-```
+    lein new cljs-server my-project
+    cd my-project
+    lein cljsserve
 
 this will start a server on localhost and compile your clojurescript code.  You can evaluate the code within [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl) by typing `(load "my-project.core")`.  This provides an easy development workflow for modifying other people's websites.
+
+## Gotchas
+
+Modern websites sometimes include a http header called Content Security Policy (CSP) that blocks cljs-server.  Check the Block CSP checkbox and refresh your page.
 
 
 ## License
