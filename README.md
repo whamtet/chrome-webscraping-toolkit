@@ -14,6 +14,8 @@ this will start a server on localhost and compile your clojurescript code.  You 
 
 Modern websites sometimes include a http header called Content Security Policy (CSP) that blocks cljs-server.  Check the Block CSP checkbox and refresh your page.
 
+Enable the following flags on chrome [#allow-insecure-localhost](chrome://flags/#allow-insecure-localhost).
+
 
 ## License
 
