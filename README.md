@@ -16,6 +16,8 @@ Modern websites sometimes include a http header called Content Security Policy (
 
 Enable the following flags on chrome [#allow-insecure-localhost](chrome://flags/#allow-insecure-localhost).
 
+[chrome://](chrome://) pages do not work.
+
 
 ## License
 
