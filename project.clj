@@ -17,7 +17,7 @@
                  [crate "0.2.4"]
                  [cljs-ajax "0.3.14"]
                  ]
-  :resource-paths ["goog" "keys"]
+  :resource-paths ["keys"]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]]
   :hooks [environ.leiningen.hooks]

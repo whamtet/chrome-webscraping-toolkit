@@ -29,7 +29,7 @@
                [provide [(str prefix location) requires]]))
            raw-deps))))
 
-(def goog-deps (slurp-deps-map "/deps.js" "/"))
+;(def goog-deps (slurp-deps-map "/deps.js" "/"))
 
 (defn glue-lines
   "glue lines"
@@ -55,9 +55,11 @@
   [root]
   (conj
    (deps-seq
-    (merge goog-deps (slurp-deps-map "out/cljs_deps.js" "out/goog/"))
+    (merge
+     (slurp-deps-map "out/goog/deps.js" "out/goog/")
+     (slurp-deps-map "out/cljs_deps.js" "out/goog/"))
     root)
-   ["goog.base" "/base.js"]))
+   ["goog.base" "out/goog/base.js"]))
 
 (defn slurp-dep [[_ path]] ;still need _
   (let [
