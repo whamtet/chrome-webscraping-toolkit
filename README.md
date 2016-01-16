@@ -1,6 +1,6 @@
-# cljs-server
+# chrome-webscraping-toolkit
 
-`cljs-server` is a code server to be used in conjunction with [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl).
+`chrome-webscraping-toolkit` is a code server to be used in conjunction with [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl).
 
 ## Usage
 

@@ -72,8 +72,10 @@
         ]
     (glue-lines lines)))
 
-(def safe-delete "safe_delete = function(name) {
-  if (window[name]) { delete window[name];}}")
+(def safe-delete "
+  p = this;
+  safe_delete = function(name) {
+  if (p[name]) { delete p[name];}}")
 
 (defn predeclare-ns [deps]
   (let [
