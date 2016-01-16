@@ -1,6 +1,6 @@
-# chrome-webscraping-toolkit
+# Chrome Webscraping Toolkit
 
-`chrome-webscraping-toolkit` is a code server to be used in conjunction with [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl).
+Chrome Webscraping Toolkit is a code server to be used in conjunction with [chrome-clojurescript-repl](https://github.com/whamtet/chrome-clojurescript-repl).  It can be used to hotload code into websites with complex AJAX to facilitate data scraping.
 
 ## Usage
 
